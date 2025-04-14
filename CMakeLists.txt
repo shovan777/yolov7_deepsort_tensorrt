@@ -5,6 +5,7 @@ project(deepsort)
 set(CMAKE_CXX_STANDARD 14)
 
 # CUDA
+# set(CUDA_TOOLKIT_ROOT_DIR /usr/local/cuda)
 find_package(CUDA REQUIRED)
 message(STATUS "Find CUDA include at ${CUDA_INCLUDE_DIRS}")
 message(STATUS "Find CUDA libraries: ${CUDA_LIBRARIES}")

@@ -18,12 +18,12 @@ void InferenceVideo(const std::string &video_name, YOLO &yolo, ObjectTracker &tr
                               (int) video_cap.get(cv::CAP_PROP_FRAME_HEIGHT));
     std::cout << "Frame width is: " << sSize.width << ", height is: " << sSize.height << std::endl;
     auto fFps = (float)video_cap.get(cv::CAP_PROP_FPS);
-    cv::VideoWriter video_writer("result.avi",  cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
+    cv::VideoWriter video_writer("/app/result.avi",  cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
             fFps, sSize);
     cv::Mat src_img;
     auto frame_i=0;
     while (video_cap.read(src_img)) {
-        std::cout << "----------frame_i: " << frame_i << "----------" << std::endl;
+        std::cout << "hellooshov***----------frame_i: " << frame_i << "----------" << std::endl;
         cv::cvtColor(src_img, src_img, cv::COLOR_BGR2RGB);
         std::vector<cv::Mat> vec_org_img;
         vec_org_img.push_back(src_img);

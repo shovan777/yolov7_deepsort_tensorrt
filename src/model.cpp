@@ -28,8 +28,10 @@ void Model::onnxToTRTModel() {
         gLogError << "Failure while parsing ONNX file" << std::endl;
     }
     // Build the engine
-    builder->setMaxBatchSize(BATCH_SIZE);
-    config->setMaxWorkspaceSize(1_GiB);
+    // builder->setMaxDLABatchSize(BATCH_SIZE);
+    // config->setMaxWorkspaceSize(1_GiB);
+    // config->setMaxWorkspaceSize(1 << 30);  // 1 GiB in bytes
+    config->setMemoryPoolLimit(nvinfer1::MemoryPoolType::kWORKSPACE, 1 << 30);  // 1 GiB in bytes
     config->setFlag(nvinfer1::BuilderFlag::kFP16);
 
     std::cout << "start building engine" << std::endl;
@@ -37,7 +39,9 @@ void Model::onnxToTRTModel() {
     std::cout << "build engine done" << std::endl;
     assert(engine);
     // we can destroy the parser
-    parser->destroy();
+    // parser->destroy();
+    // delete parser;
+
     // save engine
     nvinfer1::IHostMemory *data = engine->serialize();
     std::ofstream file;
@@ -47,8 +51,10 @@ void Model::onnxToTRTModel() {
     std::cout << "save engine file done" << std::endl;
     file.close();
     // then close everything down
-    network->destroy();
-    builder->destroy();
+    // network->destroy();
+    // delete network;
+    // builder->destroy();
+    // delete builder;
 }
 
 bool Model::readTrtFile() {
@@ -71,7 +77,7 @@ bool Model::readTrtFile() {
     file.close();
 
     trtRuntime = nvinfer1::createInferRuntime(gLogger.getTRTLogger());
-    engine = trtRuntime->deserializeCudaEngine(cached_engine.data(), cached_engine.size(), nullptr);
+    engine = trtRuntime->deserializeCudaEngine(cached_engine.data(), cached_engine.size());
     std::cout << "deserialize done" << std::endl;
 
 }
@@ -92,12 +98,13 @@ void Model::LoadEngine() {
     assert(context != nullptr);
 
     //get buffers
-    assert(engine->getNbBindings() == 2);
-    int nbBindings = engine->getNbBindings();
+    assert(engine->getNbIOTensors() == 2);
+    int nbBindings = engine->getNbIOTensors();
     bufferSize.resize(nbBindings);
     for (int i = 0; i < nbBindings; ++i) {
-        nvinfer1::Dims dims = engine->getBindingDimensions(i);
-        nvinfer1::DataType dtype = engine->getBindingDataType(i);
+        const char* tensorName = engine->getIOTensorName(i);
+        nvinfer1::Dims dims = context->getTensorShape(tensorName);
+        nvinfer1::DataType dtype = engine->getTensorDataType(tensorName);
         int64_t totalSize = volume(dims) * getElementSize(dtype);
         bufferSize[i] = totalSize;
         std::cout << "binding" << i << ": " << totalSize << std::endl;

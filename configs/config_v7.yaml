@@ -1,6 +1,6 @@
 detect:
-    onnx_file:     "/workspace/models/yolov7/v1.0/tensorrt_inference/yolov7.onnx"
-    engine_file:   "/workspace/models/yolov7/v1.0/tensorrt_inference/yolov7.trt"  
+    onnx_file:     "../weights/yolov7.onnx"
+    engine_file:   "../weights/yolov7.trt"  
     labels_file:   "../configs/coco.names"      
     BATCH_SIZE:    1
     INPUT_CHANNEL: 3

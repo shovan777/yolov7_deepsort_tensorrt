@@ -113,7 +113,7 @@ float *YOLO::ModelInference(std::vector<float> image_data) {
     cudaMemcpyAsync(buffers[0], image_data.data(), bufferSize[0], cudaMemcpyHostToDevice, stream);
 
     // do inference
-    context->execute(BATCH_SIZE, buffers);
+    context->executeV2(buffers);
     cudaMemcpyAsync(out, buffers[1], bufferSize[1], cudaMemcpyDeviceToHost, stream);
     cudaStreamSynchronize(stream);
     return out;     

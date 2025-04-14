@@ -12,3 +12,4 @@ dev/
 results/
 weights/
 .git.bk/
+result*
